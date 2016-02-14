@@ -2,7 +2,7 @@
 
 A little wire drawer made with SDL in Rust.
 
-![screenshot](https://github.com/GuillaumeGomez/wire-drawer/resources/screenshot.png)
+![screenshot](https://github.com/GuillaumeGomez/wire-drawer/blob/master/resources/screenshot.png)
 
 If you want to build it, please install SDL 1.x and then just use cargo:
 
