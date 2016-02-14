@@ -1,0 +1,19 @@
+[package]
+name = "wire-drawer"
+version = "0.0.1"
+authors = ["Guillaume Gomez <guillaume1.gomez@gmail.com>"]
+
+description = "A little wire drawer in SDL"
+repository = "https://github.com/GuillaumeGomez/wire-drawer"
+license = "MIT"
+homepage = "https://github.com/GuillaumeGomez/wire-drawer"
+
+readme = "README.md"
+
+keywords = ["GUI", "wire", "SDL"]
+
+[dependencies]
+sdl = "0.3.6"
+
+[[bin]]
+name = "wire-drawer"
