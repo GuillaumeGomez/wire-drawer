@@ -10,7 +10,7 @@ If you want to build it, please install SDL 1.x and then just use cargo:
 > cargo build --release
 ```
 
-And to run it:
+And for running it:
 
 ```Shell
 > cargo run
