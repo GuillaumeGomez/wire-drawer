@@ -50,6 +50,9 @@ fn parse_map(map: String) -> Vec<Vec<i16>> {
     let mut ret = vec!();
 
     for line in map.split('\n') {
+        if line.len() < 1 {
+            continue;
+        }
         ret.insert(0, line.split(' ').map(|x| i16::from_str(x).unwrap()).collect());
     }
     ret
@@ -96,12 +99,14 @@ fn draw_line(a: &Point, b: &Point, screen: &sdl::video::Surface, color: &sdl::vi
     }
 }
 
-fn draw_map(map: &[Vec<i16>], width_step: i16, height_step: i16, screen: &sdl::video::Surface) {
-    //let mut x_orig = ((WINDOW_WIDTH - map[0].len() * width_step as usize - 10) / 2) as i16;
-    let mut x_orig = ((WINDOW_HEIGHT - map.len() * height_step as usize - 10) / 2) as i16;
-    let mut y_orig = (WINDOW_HEIGHT / 2 + 5) as i16;
+fn draw_map(map: &[Vec<i16>], step: i16, screen: &sdl::video::Surface) {
+    let mut x_orig = WINDOW_WIDTH as i16 / 2 - (WINDOW_WIDTH as i16 / 2 - step * map[0].len() as i16 / 2);
+    let mut y_orig = WINDOW_HEIGHT as i16 / 2;
     let mut prev_line = vec!();
 
+    if map[0].len() > map.len() {
+        y_orig -= (map[0].len() as i16 - map.len() as i16) * (step / 2);
+    }
     for line in map.iter() {
         let mut y = y_orig;
         let mut x = x_orig;
@@ -110,7 +115,7 @@ fn draw_map(map: &[Vec<i16>], width_step: i16, height_step: i16, screen: &sdl::v
         let color = sdl::video::Color::RGB(255, 255, 255);
 
         for (it, point) in line.iter().enumerate() {
-            let current = Point::new(x as i16, y as i16 - point * height_step);
+            let current = Point::new(x as i16, y as i16 - point * step);
             if let Some(p) = prev {
                 draw_line(&p, &current, screen, &color);
             }
@@ -119,12 +124,12 @@ fn draw_map(map: &[Vec<i16>], width_step: i16, height_step: i16, screen: &sdl::v
             }
             current_line.push(current);
             prev = Some(current);
-            y += height_step;
-            x += width_step;
+            y += step;
+            x += step;
         }
         prev_line = current_line.clone();
-        x_orig += width_step;
-        y_orig -= height_step;
+        x_orig += step;
+        y_orig -= step;
     }
 }
 
@@ -132,18 +137,15 @@ fn check_map(map: &[Vec<i16>]) -> Option<(i16, i16)> {
     let width = map[0].len();
     let height = map.len();
 
-    if width != height {
-        println!("Height must be equal to width!\nheight = {} and witdh = {}", height, width);
-        return None;
-    }
     for (pos, line) in map.iter().enumerate() {
         if line.len() != width {
             println!("Invalid width at line {}. Expected {}, found {}", pos, width, line.len());
             return None;
         }
     }
-    //Some((((WINDOW_WIDTH - 10) / width as usize) as i16, ((WINDOW_HEIGHT - 10) / height as usize) as i16))
-    Some((((WINDOW_HEIGHT - 10) / height as usize) as i16 / 2, ((WINDOW_HEIGHT - 10) / height as usize) as i16 / 2))
+    let height = min(((WINDOW_HEIGHT - 10) / height as usize) as i16 / 2, ((WINDOW_HEIGHT - 10) / width as usize) as i16 / 2);
+
+    Some((((WINDOW_WIDTH - 10) / width as usize) as i16 / 2, height))
 }
 
 fn main() {
@@ -171,7 +173,7 @@ fn main() {
                 }
             };
 
-            draw_map(&m, w, h, &screen);
+            draw_map(&m, min(w, h), &screen);
 
             screen.flip();
 
